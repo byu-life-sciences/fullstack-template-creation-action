@@ -1,0 +1,21 @@
+name: "Fullstack Template Repo Creation Action"
+description: "A GitHub action that gets run when the fullstack-template repo is used to initialize a different repo"
+branding:
+  icon: "edit-2"
+  color: "blue"
+inputs:
+  name-to-replace-with:
+    description: "The name of that you want to replace the fullstack-template repo name with (usually the name of the repo you're creating)"
+    required: true
+    default: "insert-repo-name-here"
+  api-template-name:
+    description: "The name of the API template repo"
+    required: true
+    default: "fullstack-template-api"
+  frontend-template-name:
+    description: "The name of the frontend template repo"
+    required: true
+    default: "fullstack-template-frontend"
+runs:
+  using: "node20"
+  main: "dist/index.js"
