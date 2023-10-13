@@ -1,5 +1,5 @@
 # Fullstack Template Creation Action
-A GitHub action that gets run when the fullstack-template repo is used to initialize a different repo.
+A GitHub action that gets run when the fullstack-template repo is used to initialize a different repo. In some places I've worked, we clone from a template repository frequently. As part of that cloning process, we would spend ~1 hour each time renaming files to match the new repo name. This action will automatically do all that renaming, saving a lot of time.
 
 ## What does this action do?
 The action does the following:
