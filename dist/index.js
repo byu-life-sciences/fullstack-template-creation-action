@@ -30685,7 +30685,7 @@ try {
     //replace all instances of apiTemplateName with custom name
     content = content.replace(
       new RegExp(apiTemplateName, "g"),
-      nameToReplaceWith
+      customRenameForAPI(nameToReplaceWith)
     );
     fs.writeFileSync(filePath, content, "utf8");
   };
