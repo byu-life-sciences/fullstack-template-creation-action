@@ -17,7 +17,9 @@ try {
     : core.getInput("frontend-template-name"); //gets the name of the frontend template from the action input
   core.info(`frontend-template-name: ${frontendTemplateName}`);
   core.info(`process.env.GITHUB_WORKSPACE: ${process.env.GITHUB_WORKSPACE}`);
-  const files = fs.readdirSync(process.env.GITHUB_WORKSPACE);
+  const files = isLocal
+    ? fs.readdirSync(".")
+    : fs.readdirSync(process.env.GITHUB_WORKSPACE);
   core.info(`Files in directory: ${files}`);
 
   const apiFolderPath = files.find((file) => file.includes("Api"));
@@ -63,7 +65,7 @@ try {
     //replace all instances of apiTemplateName with custom name
     content = content.replace(
       new RegExp(apiTemplateName, "g"),
-      nameToReplaceWith
+      customRenameForAPI(nameToReplaceWith)
     );
     fs.writeFileSync(filePath, content, "utf8");
   };
@@ -155,19 +157,31 @@ try {
     });
   };
 
+  const renamePackageJson = (folder) => {
+    const packageJsonPath = path.join(folder, "package.json");
+    let content = fs.readFileSync(packageJsonPath, "utf8");
+    content = content.replace(new RegExp("Api-template", "g"), newApiFolderName);
+    content = content.replace(
+      new RegExp("CAP.API", "g"),
+      customRenameForAPI(nameToReplaceWith) + ".API"
+    );
+    fs.writeFileSync(packageJsonPath, content, "utf8");
+  };
+
   const newApiFolderName = `${nameToReplaceWith}-api`;
   core.info(`Renaming ${apiFolderPath} to ${newApiFolderName}`);
   fs.renameSync(apiFolderPath, newApiFolderName);
 
   //Rename API folder contents
   renameFilesAndFoldersForAPI(`${newApiFolderName}`);
-
+  renamePackageJson(newFrontendFolderName);
   //Rename frontend folder
   const newFrontendFolderName = `${nameToReplaceWith}`;
   core.info(`Renaming ${frontendFolder} to ${newFrontendFolderName}`);
   fs.renameSync(frontendFolder, newFrontendFolderName);
   //rename all instances of "React DAB!" in frontend folder to custom name
   renameFilesAndFoldersForFrontend(`${newFrontendFolderName}`);
+  renamePackageJson(newFrontendFolderName);
 } catch (error) {
   core.setFailed(error.message);
 }
