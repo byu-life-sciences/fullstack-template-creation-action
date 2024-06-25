@@ -160,13 +160,22 @@ try {
   const renamePackageJson = (folder) => {
     const packageJsonPath = path.join(folder, "package.json");
     let content = fs.readFileSync(packageJsonPath, "utf8");
-    content = content.replace(new RegExp("Api-template", "g"), newApiFolderName);
+    content = content.replace(/Api-template/g, newApiFolderName);
     content = content.replace(
-      new RegExp("CAP.API", "g"),
+      /CAP\.API/g,
       customRenameForAPI(nameToReplaceWith) + ".API"
     );
     fs.writeFileSync(packageJsonPath, content, "utf8");
   };
+
+  const renameConfig = (folder) => {
+    const configPath = path.join(folder, "openapi-ts.config.ts");
+    let content = fs.readFileSync(configPath, "utf8");
+    content = content.replace(/Api-template/g, newApiFolderName);
+    content = content.replace(/CAP\.API/g, customRenameForAPI(nameToReplaceWith) + ".API");
+    fs.writeFileSync(configPath, content, "utf8");
+  }
+
 
   const newApiFolderName = `${nameToReplaceWith}-api`;
   core.info(`Renaming ${apiFolderPath} to ${newApiFolderName}`);
@@ -182,6 +191,8 @@ try {
   //rename all instances of "React DAB!" in frontend folder to custom name
   renameFilesAndFoldersForFrontend(`${newFrontendFolderName}`);
   renamePackageJson(newFrontendFolderName);
+  // Rename the open api config file
+  renameConfig(newFrontendFolderName);
 } catch (error) {
   core.setFailed(error.message);
 }
